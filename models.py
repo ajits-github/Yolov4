@@ -474,7 +474,8 @@ if __name__ == "__main__":
     model = Yolov4(yolov4conv137weight=None, n_classes=n_classes, inference=True)
 
     pretrained_dict = torch.load(weightfile, map_location=torch.device('cuda'))
-    model.load_state_dict(pretrained_dict)
+    # model.load_state_dict(pretrained_dict)
+    model.load_state_dict(pretrained_dict,strict=False)
 
     use_cuda = True
     if use_cuda:
@@ -502,8 +503,12 @@ if __name__ == "__main__":
             namesfile = 'data/voc.names'
         elif n_classes == 80:
             namesfile = 'data/coco.names'
+        elif n_classes == 43:
+            print("NAMES FILE in models.py======================================")
+            namesfile = 'data/gtsrb.names'
         else:
             print("please give namefile")
-
+    print("NAMES FILE in models.py: ",namesfile)
     class_names = load_class_names(namesfile)
+    print("CLASS NAMES in models.py: ",class_names)
     plot_boxes_cv2(img, boxes[0], 'predictions.jpg', class_names)

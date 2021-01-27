@@ -18,6 +18,7 @@ from . import utils
 
 class CocoEvaluator(object):
     def __init__(self, coco_gt, iou_types, bbox_fmt='coco'):
+        # print('Inside CocoEvaluator constrcutor coco_eval.py==============')
         assert isinstance(iou_types, (list, tuple))
         coco_gt = copy.deepcopy(coco_gt)
         self.coco_gt = coco_gt
@@ -31,8 +32,10 @@ class CocoEvaluator(object):
 
         self.img_ids = []
         self.eval_imgs = {k: [] for k in iou_types}
+        print('Leaving CocoEvaluator constrcutor coco_eval.py==============')
 
     def update(self, predictions):
+        # print('Inside Update coco_eval.py==============')
         img_ids = list(np.unique(list(predictions.keys())))
         self.img_ids.extend(img_ids)
 
@@ -250,6 +253,7 @@ def loadRes(self, resFile):
     :param   resFile (str)     : file name of result file
     :return: res (obj)         : result api object
     """
+    # print("In loadRes cocoeval.py================================")
     res = COCO()
     res.dataset['images'] = [img for img in self.dataset['images']]
 

@@ -20,6 +20,7 @@ import numpy as np
 import torch
 from torch.utils.data.dataset import Dataset
 
+GLOBAL_IMG_ID = 0  # global image id.
 
 def rand_uniform_strong(min, max):
     if min > max:
@@ -403,40 +404,51 @@ class Yolo_dataset(Dataset):
         boxes[..., 2:] = boxes[..., 2:] - boxes[..., :2]  # box width, box height
         target['boxes'] = torch.as_tensor(boxes, dtype=torch.float32)
         target['labels'] = torch.as_tensor(bboxes_with_cls_id[...,-1].flatten(), dtype=torch.int64)
-        target['image_id'] = torch.tensor([get_image_id(img_path)])
+        # target['image_id'] = torch.tensor([get_image_id(img_path)])
+        # target['image_id']=index
+        target['image_id']=torch.tensor([index])
         target['area'] = (target['boxes'][:,3])*(target['boxes'][:,2])
         target['iscrowd'] = torch.zeros((num_objs,), dtype=torch.int64)
         return img, target
 
 
-def get_image_id(filename:str) -> int:
-    """
-    Convert a string to a integer.
-    Make sure that the images and the `image_id`s are in one-one correspondence.
-    There are already `image_id`s in annotations of the COCO dataset,
-    in which case this function is unnecessary.
-    For creating one's own `get_image_id` function, one can refer to
-    https://github.com/google/automl/blob/master/efficientdet/dataset/create_pascal_tfrecord.py#L86
-    or refer to the following code (where the filenames are like 'level1_123.jpg')
-    >>> lv, no = os.path.splitext(os.path.basename(filename))[0].split("_")
-    >>> lv = lv.replace("level", "")
-    >>> no = f"{int(no):04d}"
-    >>> return int(lv+no)
-    """
-    raise NotImplementedError("Create your own 'get_image_id' function")
-    lv, no = os.path.splitext(os.path.basename(filename))[0].split("_")
-    lv = lv.replace("level", "")
-    no = f"{int(no):04d}"
-    return int(lv+no)
+# def get_image_id(filename:str) -> int:
+#     """
+#     Convert a string to a integer.
+#     Make sure that the images and the `image_id`s are in one-one correspondence.
+#     There are already `image_id`s in annotations of the COCO dataset,
+#     in which case this function is unnecessary.
+#     For creating one's own `get_image_id` function, one can refer to
+#     https://github.com/google/automl/blob/master/efficientdet/dataset/create_pascal_tfrecord.py#L86
+#     or refer to the following code (where the filenames are like 'level1_123.jpg')
+#     >>> lv, no = os.path.splitext(os.path.basename(filename))[0].split("_")
+#     >>> lv = lv.replace("level", "")
+#     >>> no = f"{int(no):04d}"
+#     >>> return int(lv+no)
+#     """
+#     # raise NotImplementedError("Create your own 'get_image_id' function")
+#     # lv, no = os.path.splitext(os.path.basename(filename))[0].split("_")
+#     # lv = lv.replace("level", "")
+#     # no = f"{int(no):04d}"
+#     # return int(lv+no)
+#     # print(int(os.path.splitext(os.path.basename(filename))[0]))
+#     # return (int(os.path.splitext(os.path.basename(filename))[0]))
+#     # del filename
+#     global GLOBAL_IMG_ID
+#     GLOBAL_IMG_ID += 1
+#     # print('filename============= {}: {}'.format(filename,GLOBAL_IMG_ID))
+#     # exit()
+#     return GLOBAL_IMG_ID
 
 
 if __name__ == "__main__":
     from cfg import Cfg
     import matplotlib.pyplot as plt
-
+    print("Cfg in dataset.py: ",Cfg)
     random.seed(2020)
     np.random.seed(2020)
     Cfg.dataset_dir = '/mnt/e/Dataset'
+    print("Cfg in dataset.py: ",Cfg)
     dataset = Yolo_dataset(Cfg.train_label, Cfg)
     for i in range(100):
         out_img, out_bboxes = dataset.__getitem__(i)

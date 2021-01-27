@@ -203,6 +203,7 @@ def convert_to_coco_api(ds, bbox_fmt='voc'):
     dataset['categories'] = [{'id': i} for i in sorted(categories)]
     coco_ds.dataset = dataset
     coco_ds.createIndex()
+    # print("coco_ds============================",coco_ds.dataset)
     return coco_ds
 
 
